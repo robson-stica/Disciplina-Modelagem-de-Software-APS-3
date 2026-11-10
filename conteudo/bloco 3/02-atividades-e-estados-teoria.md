@@ -43,3 +43,4 @@ $$\text{EventoGatilho} \ [\text{CondiçãoDeGuarda}] \ / \ \text{AçãoDeEfeito}
 | **Sequência** | *Como as classes e microsserviços trocam chamadas no tempo?* | Troca cronológica de mensagens e DTOs. |
 | **Atividades** | *Como o fluxo de ponta a ponta é orquestrado entre áreas?* | Workflows, concorrência (Fork/Join) e raias. |
 | **Transição de Estados** | *Quais regras protegem os dados e estados de uma entidade?* | Ciclo de vida, gatilhos, guardas e ações de efeito. |
+

@@ -126,3 +126,4 @@ stateDiagram-v2
 No próximo encontro, encerraremos a visão microscópica de classes e métodos para dar o salto definitivo em direção à **Arquitetura de Software Macro Corporativa**. 
 
 Aplicaremos o **Modelo C4 concebido por Simon Brown**, utilizando as metáforas de zoom estruturado (estilo Google Maps) para modelar os diagramas de **Contexto (L1)**, **Contêineres (L2)** e **Componentes (L3)** de sistemas modernos orientados a microsserviços, nuvem e contêineres Docker.
+

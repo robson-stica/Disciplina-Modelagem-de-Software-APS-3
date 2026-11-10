@@ -37,3 +37,4 @@
 > **"Toda mensagem enviada para uma Linha de Vida B no Diagrama de Sequência DEVE obrigatoriamente corresponder a um Método Público declarado na Classe B no Diagrama de Classes."**
 
 Se a sequência dispara `validarOcorrencia(dto)`, a classe receptora deve possuir `+validarOcorrencia(dto: ValidacaoDTO): RetornoDTO` no diagrama de classes.
+
