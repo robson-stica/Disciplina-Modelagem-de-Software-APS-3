@@ -1,9 +1,7 @@
-# Dossiê de Arquitetura Viva e Modelagem Comportamental as-Code
-**Unidade Curricular:** Modelagem de Software  
+**Disciplina:** Modelagem de Software  
 **Curso:** Engenharia de Software (4º Período — UniSenai)  
-**Docente:** Prof. Sidney L. da Silva  
-**Modalidade:** Avaliação Prática Supervisionada (APS 3) — Individual  
-**Estudante:** **Robson Stica** (`aps3-robson-stica`)  
+**Professor:** Prof. Sidney L. da Silva  
+**Aluno:** **Robson Eduardo Stica** (`aps3-robson-stica`)  
 **Repositório:** [Spring-DaC](https://github.com/robson-stica/Spring-DaC)
 
 ---
