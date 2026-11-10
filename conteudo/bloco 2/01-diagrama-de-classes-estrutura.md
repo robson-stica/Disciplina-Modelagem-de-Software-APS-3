@@ -72,3 +72,4 @@ classDiagram
     Aluno "1" --> "*" Reserva : solicita
     Reserva "*" o-- "1" Maquina : contém
 ```
+

@@ -67,3 +67,4 @@ classDiagram
     IReservaService <|.. FabLabReservaService : Realização
     FabLabReservaService ..> EquipamentoRepository : Dependência
 ```
+

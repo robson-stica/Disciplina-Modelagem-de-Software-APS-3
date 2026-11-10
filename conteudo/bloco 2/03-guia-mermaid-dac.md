@@ -86,3 +86,4 @@ flowchart TD
     end
 ```
 - Fork e Join: nós intermediários de bifurcação e sincronização para modelar paralelismo.
+
