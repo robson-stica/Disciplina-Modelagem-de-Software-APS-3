@@ -1,0 +1,47 @@
+stateDiagram-v2
+    [*] --> DetecaoRegistrada : eventoRecebido / processarPayload()
+
+    state DetecaoRegistrada {
+        [*] --> Ingestao
+        Ingestao --> AguardandoPersistencia
+    }
+
+    DetecaoRegistrada --> OcorrenciaPendente : persistirDados [dadosValidos == true] / vincularEvidenciaStorage()
+
+    state OcorrenciaPendente {
+        entry / emitirNotificacaoAuditor()
+        do / monitorarSLAAtendimento()
+        exit / atribuirAuditorResponsavel()
+    }
+
+    OcorrenciaPendente --> SobAuditoria : iniciarAnalise [auditorDisponivel] / bloquearEdicaoConcorrente()
+
+    state SobAuditoria {
+        [*] --> InspecaoVisual
+        InspecaoVisual --> EmissaoLaudo
+    }
+
+    SobAuditoria --> OcorrenciaDescartada : descartarOcorrencia [laudo == FALSO_POSITIVO] / alimentarDatasetRetreino()
+    SobAuditoria --> NaoConformidadeAberta : aprovarOcorrencia [laudo == CONFIRMADO] / gerarRegistroNC(severidade)
+
+    OcorrenciaDescartada --> [*]
+
+    state NaoConformidadeAberta {
+        entry / notificarSupervisorLinha()
+        do / contabilizarTempoResolucao()
+    }
+
+    NaoConformidadeAberta --> PlanoAcaoEmExecucao : submeterPlano [planoDefinido == true] / definirPrazoCorrecao()
+
+    state PlanoAcaoEmExecucao {
+        [*] --> AdequacaoEPI
+        AdequacaoEPI --> EvidenciaResolucaoSubmetida
+    }
+
+    PlanoAcaoEmExecucao --> ValidacaoCorrecao : concluirAcao / notificarReauditoria()
+
+    ValidacaoCorrecao --> PlanoAcaoEmExecucao : rejeitarCorrecao [eficacia == NAO_CONFORME] / reabrirPendencia()
+    ValidacaoCorrecao --> Concluida : aprovarCorrecao [eficacia == CONFORME] / fecharChamadoAuditoria()
+
+    Concluida --> [*]
+

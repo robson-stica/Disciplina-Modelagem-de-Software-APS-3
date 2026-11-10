@@ -1,0 +1,69 @@
+flowchart TD
+    %% Nós Iniciais e Terminais
+    node_start((Inicio))
+    node_end_descarte((Fim: Descarte))
+    node_end_nc((Fim: NC Aberta))
+
+    %% Definição das Raias de Execução (Swimlanes)
+    subgraph Lane_CV ["Motor de Visão Computacional (CV / Python)"]
+        A1["Capturar Frame RTSP de Câmera Industrial"]
+        A2["Inferir Presença de EPIs e Bounding Boxes (YOLOv8)"]
+        D1{"Confiança >= Limiar Crítico?"}
+        A3["Gerar Payload com Metadata e Coordenadas"]
+    end
+
+    subgraph Lane_Infra ["Infraestrutura Assíncrona & Armazenamento"]
+        F1["Barra de Fork: Disparo Paralelo"]
+        P1["Fazer Upload de Frame com Bounding Box (MinIO S3)"]
+        P2["Publicar Evento em Fila 'detecao.exchange' (RabbitMQ)"]
+        J1["Barra de Join: Sincronização"]
+        A4["Persistir Ocorrência com Status PENDENTE (PostgreSQL)"]
+        A5["Disparar Notificação Push com WebSocket"]
+    end
+
+    subgraph Lane_Auditor ["Técnico de Segurança do Trabalho (Auditor)"]
+        A6["Receber Notificação de Nova Ocorrência Pendente"]
+        A7["Abrir Painel e Analisar Imagem e Metadados de Compliance"]
+        D2{"Auditoria Técnica de Desvio de NR?"}
+        A8["Registrar Descarte com Justificativa Técnica"]
+        A9["Confirmar Não Conformidade e Classificar Severidade"]
+    end
+
+    subgraph Lane_Core ["SafeLine Core & Gestão de Ações Corretivas"]
+        A10["Atualizar Status para DESCARTADA e Arquivar"]
+        A11["Alimentar Dataset de Falso Positivo para Retreino de IA"]
+        A12["Gerar Registro de Não Conformidade (NC) no Banco"]
+        A13["Disparar Alerta de Ação Imediata para Supervisor de Linha"]
+    end
+
+    %% Conexões do Fluxo de Trabalho
+    node_start --> A1
+    A1 --> A2
+    A2 --> D1
+    
+    D1 -- "[confianca < 0.85]" --> A1
+    D1 -- "[confianca >= 0.85]" --> A3
+    
+    A3 --> F1
+    F1 --> P1
+    F1 --> P2
+    
+    P1 --> J1
+    P2 --> J1
+    
+    J1 --> A4
+    A4 --> A5
+    A5 --> A6
+    A6 --> A7
+    A7 --> D2
+    
+    D2 -- "[laudo == FALSO_POSITIVO]" --> A8
+    A8 --> A10
+    A10 --> A11
+    A11 --> node_end_descarte
+
+    D2 -- "[laudo == CONFIRMADO]" --> A9
+    A9 --> A12
+    A12 --> A13
+    A13 --> node_end_nc
+

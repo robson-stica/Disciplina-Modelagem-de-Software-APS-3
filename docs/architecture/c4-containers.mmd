@@ -1,0 +1,54 @@
+flowchart TB
+    %% Atores
+    Tec["👤 Técnico de Segurança<br/>[Usuário Especialista]<br/>Audita evidências visuais e laudos de conformidade"]
+    Sup["👤 Supervisor de Produção<br/>[Usuário Operacional]<br/>Recebe alertas de NC e executa planos de ação corretiva"]
+    Eng["👤 Engenheiro de Segurança<br/>[Usuário Gestor]<br/>Define parâmetros de postos, EPIs e métricas"]
+
+    %% Sistemas Externos
+    VMS["📹 Sistema VMS / Câmeras Industriais<br/>[Sistema Externo]<br/>Transmissão de streams RTSP industriais"]
+    RH["🏢 Sistema Corporativo de RH<br/>[Sistema Externo - REST]<br/>Validação de identidades e postos de trabalho"]
+
+    subgraph SafeLineSystem ["🛡️ Limite do Sistema SafeLine (C4 Nível 2 - Contêineres)"]
+        direction TB
+
+        SPA["Front-end Web (SPA)<br/>[React 18, TypeScript, TailwindCSS]<br/>Dashboard de auditoria visual e gestão de NCs"]
+        Mobile["Aplicativo Mobile Auditor<br/>[Flutter / Dart]<br/>Alertas push em tempo real na fábrica"]
+
+        Gateway["API Gateway & Reverse Proxy<br/>[Spring Cloud Gateway / Nginx]<br/>Roteamento, Rate Limiting e TLS Termination"]
+
+        CVEngine["Motor de Visão Computacional (CV)<br/>[Python 3.11, OpenCV, Ultralytics YOLOv8]<br/>Processamento de frames e inferência de EPIs em tempo real"]
+
+        Broker["Barramento de Mensagens / Broker<br/>[RabbitMQ 3.13]<br/>Filas duráveis AMQP para desacoplamento e backpressure"]
+
+        CoreAPI["SafeLine Core Backend API<br/>[Java 21, Spring Boot 3.3, Spring Data JPA]<br/>Lógica de negócio, auditoria de ocorrências e regras de NRs"]
+
+        NotifService["Microsserviço de Notificações<br/>[Node.js / Express]<br/>Disparo de WebSockets, Push Notifications e E-mails"]
+
+        Storage[("Armazenamento de Objetos (Evidências)<br/>[MinIO S3 Compatible Storage]<br/>Frames de vídeo, snapshots e bounding boxes")]
+
+        DB[("Banco de Dados Relacional<br/>[PostgreSQL 16]<br/>Dados de postos, ocorrências, NCs e logs de auditoria")]
+    end
+
+    %% Relações e Protocolos
+    Tec -->|"HTTPS / JSON"| SPA
+    Tec -->|"HTTPS / WSS"| Mobile
+    Sup -->|"HTTPS / JSON"| SPA
+    Eng -->|"HTTPS / JSON"| SPA
+
+    SPA -->|"HTTPS / REST"| Gateway
+    Mobile -->|"HTTPS / REST"| Gateway
+
+    VMS -->|"RTSP (H.264)"| CVEngine
+    CVEngine -->|"S3 API (HTTPS)"| Storage
+    CVEngine -->|"AMQP 0-9-1 (detecao.queue)"| Broker
+
+    Broker -->|"AMQP 0-9-1"| CoreAPI
+    Gateway -->|"HTTP / REST interno"| CoreAPI
+    CoreAPI -->|"JDBC (SQL Port 5432)"| DB
+    CoreAPI -->|"S3 Presigned URLs"| Storage
+    CoreAPI -->|"AMQP 0-9-1 (notificacoes.queue)"| Broker
+    Broker -->|"AMQP 0-9-1"| NotifService
+    NotifService -->|"WebSocket (WSS)"| SPA
+    NotifService -->|"FCM / APNs"| Mobile
+    CoreAPI -->|"HTTPS / JSON"| RH
+

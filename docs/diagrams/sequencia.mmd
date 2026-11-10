@@ -1,0 +1,43 @@
+sequenceDiagram
+    autonumber
+    actor Tec as Tecnico de Seguranca
+    participant CV as Motor de Visao Computacional (YOLOv8)
+    participant Storage as Object Storage (MinIO S3)
+    participant Broker as Message Broker (RabbitMQ)
+    participant Core as SafeLine Core (Spring Boot API)
+    participant DB as Banco PostgreSQL 16
+    participant Notif as Servico Notificacoes (Push/WS)
+
+    Note over CV, Broker: 1. Detecao de Desvio de EPI em Tempo Real (Assincrono)
+    CV->>Storage: uploadFrameEvidencia(frameBytes, metadata)
+    Storage-->>CV: frameUrl: String
+    CV-)Broker: publicarDetecao(detecaoEvidenciaDTO)
+    
+    Note over Broker, Core: 2. Ingestao e Criacao de Ocorrencia Pendente
+    Broker-)Core: consumirEventoDetecao(detecaoEvidenciaDTO)
+    Core->>DB: persistirOcorrencia(ocorrenciaEntity)
+    DB-->>Core: ocorrenciaId: Long
+    Core-)Notif: dispararAlertaPendente(alertaNotificacaoDTO)
+    Notif--)Tec: notificarOcorrenciaPendente(alertaNotificacaoDTO)
+
+    Note over Tec, Core: 3. Auditoria Humana e Avaliacao de Desvio
+    Tec->>Core: obterDetalhesOcorrencia(ocorrenciaId)
+    Core->>DB: findById(ocorrenciaId)
+    DB-->>Core: ocorrenciaEntity
+    Core-->>Tec: ocorrenciaDetalhadaDTO (inclui frameUrl, boundingBoxes, regrasEPI)
+
+    alt [decisaoAuditoria == CONFIRMADO] Desvio Real de Norma (NR-6 / NR-12)
+        Tec->>Core: validarOcorrencia(validacaoOcorrenciaDTO)
+        Core->>DB: atualizarStatusOcorrencia(ocorrenciaId, STATUS_VALIDADA)
+        Core->>DB: criarNaoConformidade(novaNCDTO)
+        DB-->>Core: naoConformidadeId: Long
+        Core-)Notif: emitirAlertaNaoConformidade(alertaNCDTO)
+        Notif--)Tec: confirmacaoAuditoriaDTO(STATUS_NC_CRIADA)
+        Core-->>Tec: retornoValidacaoDTO(sucesso=true, naoConformidadeId)
+    else [decisaoAuditoria == FALSO_POSITIVO] Oclusao ou Reflexo
+        Tec->>Core: descartarOcorrencia(descarteOcorrenciaDTO)
+        Core->>DB: atualizarStatusOcorrencia(ocorrenciaId, STATUS_DESCARTADA)
+        Core-)CV: enviarFeedbackRetreinoDataset(feedbackAuditoriaDTO)
+        Core-->>Tec: retornoValidacaoDTO(sucesso=true, status="DESCARTADA")
+    end
+
