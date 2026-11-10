@@ -53,3 +53,4 @@
   - Tarefa: Criar um Diagrama de Contexto (C4 Nível 1) simplificado no quadro branco ou papel.
   - Foco: Quem são os usuários? Quais sistemas externos (GPS, Pagamento) interagem com o app?
   - Conexão POO (3º Período): Como essas interações de alto nível se transformarão nas classes e objetos codificados em Java/C++?
+

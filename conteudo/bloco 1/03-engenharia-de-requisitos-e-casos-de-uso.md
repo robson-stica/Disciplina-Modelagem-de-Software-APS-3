@@ -48,3 +48,4 @@
 - **Mapeamento de Habilidades:**
   - **H23:** Desenvolver escopo baseado em requisitos apurados.
   - **H42:** Estruturar artefatos e diagramas que descrevem interações com usuários.
+

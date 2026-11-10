@@ -45,3 +45,4 @@ Sistemas modernos são complexos demais para serem modelados apenas em nível de
   - Identificar o Abstrato/Domínio: Reserva, Crédito de Uso, Manutenção Preventiva, Fila de Prioridade.
   - Nomear tecnicamente refletindo a Regra, não apenas o dado.
 - **Dica de Carreira:** *"Sua versão 1.0 de tudo vai ser sempre ruim. A modelagem emerge da experiência e do erro."*
+
