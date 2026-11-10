@@ -1,8 +1,7 @@
 **Disciplina:** Modelagem de Software  
 **Curso:** Engenharia de Software (4º Período — UniSenai)  
 **Professor:** Prof. Sidney L. da Silva  
-**Aluno:** **Robson Eduardo Stica** (`aps3-robson-stica`)  
-**Repositório:** [Spring-DaC](https://github.com/robson-stica/Spring-DaC)
+**Aluno:** **Robson Eduardo Stica** 
 
 ---
 
